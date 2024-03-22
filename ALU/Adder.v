@@ -20,14 +20,20 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module Adder #(parameter W = 32)(output cout, output [W-1:0]adder_out, input [W-1:0]adder_inA, input [W-1:0]adder_inB, input cin);
+module Adder #(parameter W = 32)(output cout, output overflow, output [W-1:0]adder_out, input [W-1:0]adder_inA, input [W-1:0]adder_inB, input cin);
+    wire [W-1:0] B;
+    
     wire [W-2:0] adder_cout;
-    FA_str fa0(adder_cout[0], adder_out[0], adder_inA[0], adder_inB[0], cin);
+    XOR x1 (B[0], adder_inB[0], cin);
+    FA fa0(adder_cout[0], adder_out[0], adder_inA[0], B[0], cin);
     genvar ii;
     generate
         for(ii = 1; ii < W - 1; ii = ii + 1) begin
-            FA_str fa(adder_cout[ii], adder_out[ii], adder_inA[ii], adder_inB[ii], adder_cout[ii - 1]);
+            XOR x2 (B[ii], adder_inB[ii], cin);
+            FA fa(adder_cout[ii], adder_out[ii], adder_inA[ii], B[ii], adder_cout[ii - 1]);
         end
     endgenerate
-    FA_str fa31(cout, adder_out[31], adder_inA[31], adder_inB[31], adder_cout[30]);
+    XOR x3 (B[W-1], adder_inB[W-1], cin);
+    FA faW(cout, adder_out[W-1], adder_inA[W-1], B[W-1], adder_cout[W-2]);
+    XOR over (overflow, adder_cout[W-2], cout);
 endmodule

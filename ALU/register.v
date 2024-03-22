@@ -23,7 +23,7 @@
 module Regi #(parameter W = 32)(output [W-1:0]reg_out, input clk, input [W-1:0]reg_in ); 
         genvar ii;
         generate
-            for(ii = 0; ii < W + 1; ii = ii + 1) begin
+            for(ii = 0; ii < W ; ii = ii + 1) begin
                 dff ff (reg_out[ii], reg_in[ii], clk);
              end
         endgenerate 

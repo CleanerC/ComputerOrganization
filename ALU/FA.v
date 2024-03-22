@@ -3,9 +3,9 @@
 // Company: 
 // Engineer: 
 // 
-// Create Date: 03/21/2024 11:34:23 PM
+// Create Date: 03/22/2024 02:17:55 AM
 // Design Name: 
-// Module Name: Adder_top
+// Module Name: FA
 // Project Name: 
 // Target Devices: 
 // Tool Versions: 
@@ -20,10 +20,14 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module Adder_top(output cout, output [31:0]sum, input [31:0]adder_inA, input [31:0]adder_inB, input cin, input clk);
-    wire [31:0]fa_out;
-    wire co;
-    Adder fa(cout, fa_out, adder_inA, adder_inB, cin);
-    Regi #(32) regi(sum, clk, fa_out);
-    Regi #(1) co1(cout, clk, co);
+module FA(output cout, sum,
+          input A, B, cin);
+    wire w0, w1, w2, w3;
+    
+    XOR x1 (w0, A, B);
+    XOR x2 (sum, w0, cin);
+    AND a1 (w1, w0, cin);
+    AND a2 (w2, A, B);
+    nor n1 (w3, w1, w2);
+    nand n2 (cout, w3, w3);
 endmodule

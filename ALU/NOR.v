@@ -5,7 +5,7 @@
 // 
 // Create Date: 03/22/2024 12:22:36 AM
 // Design Name: 
-// Module Name: NOT
+// Module Name: NOR
 // Project Name: 
 // Target Devices: 
 // Tool Versions: 
@@ -20,11 +20,15 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module NOT #(parameter W = 1)( output [W-1:0]out, input [W-1:0]A);
+module NOR #(parameter W = 1)( output [W-1:0]out, input [W-1:0]A, input [W-1:0]B);
     genvar ii;
     generate
         for(ii = 0; ii < W; ii = ii + 1) begin
-            nand nand0 (out[ii], A[ii], A[ii]);
+            wire w0, w1, w2;
+            nand nand0 (w0, A[ii], A[ii]);
+            nand nand1 (w1, B[ii], B[ii]);
+            nand nand2 (w2, w0, w1);
+            nand nand3 (out[ii], w2, w2);
         end
     endgenerate
 endmodule
