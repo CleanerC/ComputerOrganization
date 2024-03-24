@@ -48,7 +48,7 @@ module  ALU#(parameter W = 32)( output [W-1:0] R0,
     wire cd,od;
     
     wire [W+3 : 0] SLTVal;
-    Adder #(W+4) sub32S (cd, od, SLTVal, {{R2[W-1],R2[W-1],R2[W-1],R2[W-1]}, R2}, {{R3[W-1],R3[W-1],R3[W-1],R3[W-1]}, R3}, 1);
+        Adder #(W+4) sub32S (cd, od, SLTVal, {{R2[W-1],R2[W-1],R2[W-1],R2[W-1]}, R2}, {{R3[W-1],R3[W-1],R3[W-1],R3[W-1]}, R3}, 1);
     Adder #(W) sub32SF (coutSS, overflowSS, subd, R2, R3, 1);
     assign SLT = SLTVal[W+3];
 
@@ -57,5 +57,5 @@ module  ALU#(parameter W = 32)( output [W-1:0] R0,
     
     assign overflow = (overflowS && opcode == 3'b100) || (overflowSS && opcode == 3'b111 );
     assign zero = (R0_in == 0) ? 1 : 0;
-    assign carry = (coutS && opcode == 3'b100) || (coutSS && opcode == 3'b111) || (coutS && opcode == 3'b100);
+    assign carry = (coutA && opcode == 3'b010) || (coutSS && opcode == 3'b111) || (coutS && opcode == 3'b100);
 endmodule
