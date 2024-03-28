@@ -21,31 +21,42 @@
 module S2_Register(
 	input clk,
 	input rst,
-	input [31:0] Reg_ReadData1,
-	input [31:0] Reg_ReadData2,
-	input [4:0] S1_WriteSelect,
-	input S1_WriteEnable,
-	output reg [31:0] S2_ReadData1,
-	output reg [31:0] S2_ReadData2,
-	output reg [4:0] S2_WriteSelect,
-	output reg S2_WriteEnable
+	input [31:0] RD1,
+	input [31:0] RD2,
+	input [4:0] WS,
+	input [5:0]ALUOP,
+	input [31:0] Imm,
+	input WE, DS,
+	output reg [31:0] RD1EX,
+	output reg [31:0] RD2EX,
+	output reg [31:0] ImmEX,
+    output reg DSEX,
+    output reg [5:0]ALUEX,
+	output reg [4:0] WSP,
+	output reg WEP
    );
 
 	always@(posedge clk)
 		begin
 		if (rst)
 			begin
-			S2_ReadData1	<= 32'd0;
-			S2_ReadData2	<= 32'd0;
-			S2_WriteSelect <= 5'd0;
-			S2_WriteEnable <= 1'b0;
+			RD1EX	<= 32'd0;
+			RD2EX	<= 32'd0;
+			ImmEX <= 0;
+			DSEX <= 0;
+			ALUEX <=0;
+			WSP <= 5'd0;
+			WEP <= 1'b0;
 			end
 		else
 			begin
-			S2_ReadData1	<= Reg_ReadData1;
-			S2_ReadData2	<= Reg_ReadData2;
-			S2_WriteSelect <= S1_WriteSelect;
-			S2_WriteEnable <= S1_WriteEnable;
+            RD1EX <= RD1;
+            RD2EX <= RD2;
+            ImmEX <= Imm;
+            DSEX <= DS;
+            ALUEX  <= ALUOP;
+            WSP <= WS;
+            WEP <= WE;
 			end
 		end
 

@@ -25,60 +25,99 @@ module Pipeline(
 	output [31:0] Out
    );
 
-
-	// The naming format for wire: Source_Destination_portname
-	wire [4:0] S1_Reg_ReadSelect1;
-	wire [4:0] S1_Reg_ReadSelect2;
-	wire [4:0] S1_S2_WriteSelect;
-	wire S1_S2_WriteEnable;
-	wire [31:0] Reg_S2_ReadData1;
-	wire [31:0] Reg_S2_ReadData2;
-	wire [4:0] S2_Reg_WriteSelect;
-	wire S2_Reg_WriteEnable;
 	
 	// Wires for increment
-	wire [31:0] R2, R3;
+	wire [4:0] S1_R2, S1_R3, S1_WS;
+	wire [31:0] S1_Imm;
+	wire [5:0] S1_ALUOP;
+	wire S1_WE, S1_DS; 
+	
+    wire [31:0] FIN;
+
+	wire [4:0] S3_WS;
+	wire S3_WE;
 
 	S1_Register S1_Reg(
 		.clk(clk),
 		.rst(rst),
 		.InstrIn(InstrIn),
-		.S1_ReadSelect1(S1_Reg_ReadSelect1),
-		.S1_ReadSelect2(S1_Reg_ReadSelect2),
-		.S1_WriteSelect(S1_S2_WriteSelect),
-		.S1_WriteEnable(S1_S2_WriteEnable)
+		.RS1(S1_R2),
+		.RS2(S1_R3),
+		.WS(S1_WS),
+		.Imm(S1_Imm),
+		.WE(S1_WE),
+		.DS(S1_DS),
+		.ALUOP(S1_ALUOP)
    );
 
+	wire [31:0] read_data_2, read_data_1;
 
 	nbit_register_file Register_File (
-		.write_data(Out),								
-		.read_data_1(Reg_S2_ReadData1),
-		.read_data_2(Reg_S2_ReadData2),
-		.read_sel_1(S1_Reg_ReadSelect1),
-		.read_sel_2(S1_Reg_ReadSelect2),
-		.write_address(S2_Reg_WriteSelect),
-		.RegWrite(S2_Reg_WriteEnable),
-		.clk(clk)
+		.write_data(FIN),
+		.read_sel_1(S1_R2),
+		.read_sel_2(S1_R3),
+		.read_data_1(read_data_1),
+		.read_data_2(read_data_2),
+		.clk(clk),
+		.write_address(S3_WS),
+		.RegWrite(S3_WE)
 	);
 		
+	wire [31:0] RD1EX, RD2EX;
+	wire [31:0] ImmEX;
+	wire [5:0] ALUEX;
+	wire DSEX, S2_WE;
+	wire [4:0] S2_WS;
 	
 	S2_Register S2_Reg(
 		.clk(clk),
 		.rst(rst),
-		.Reg_ReadData1(Reg_S2_ReadData1),
-		.Reg_ReadData2(Reg_S2_ReadData2),
-		.S1_WriteSelect(S1_S2_WriteSelect),
-		.S1_WriteEnable(S1_S2_WriteEnable),
-		.S2_ReadData1(R2),
-		.S2_ReadData2(R3),
-		.S2_WriteSelect(S2_Reg_WriteSelect),
-		.S2_WriteEnable(S2_Reg_WriteEnable)
+		.RD1(read_data_1),
+		.RD2(read_data_2),
+		.WS(S1_WS),
+		.ALUOP(S1_ALUOP),
+		.Imm(S1_Imm),
+		.WE(S1_WE),
+		.DS(S1_DS),
+		.RD1EX(RD1EX),
+		.RD2EX(RD2EX),
+		.ImmEX(ImmEX),
+		.DSEX(DSEX),
+		.ALUEX(ALUEX),
+		.WSP(S2_WS),
+		.WEP(S2_WE)
+   	);
+
+	wire [31:0] ALU_R3;
+
+	MUX MUX (
+		.R(RD2EX),
+		.I(ImmEX),
+		.Se(DSEX),
+		.out(ALU_R3)
+	);
+
+	wire [31:0] ALURES;
+
+	ALU ALU(
+		.R2(RD1EX),
+		.R3(ALU_R3),
+		.opcode(ALUEX),
+		.ALUOUT(ALURES)
+	);
+
+
+   	S3_REG S3_Reg(
+	.clk(clk),
+	.rst(rst),
+	.WE(S2_WE),
+	.WS(S2_WS),
+	.ALUOUT(ALURES),
+	.RESU(FIN),
+	.WSP(S3_WS),
+	.WEP(S3_WE)
    );
 
-	Increment Increment(
-		.in1(R2),
-		.in2(R3),
-		.out(Out)
-	);
+   assign Out = FIN;
 
 endmodule
