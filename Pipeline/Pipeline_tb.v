@@ -52,7 +52,7 @@ module Pipeline_tb;
 		// Wait 10 ns for global reset to finish
 		#10;
 		rst = 0;
-		InstrIn = 32'b000000_00001_00001_00000_00000000000;
+		InstrIn = 32'b000000_11111_00001_00000_00000000000;
 		//set r2 = r1, output 10
 		
 		#30;
@@ -64,8 +64,8 @@ module Pipeline_tb;
 		//r3 = r1+ r2 output should be 30
 		
 		#30;
-		InstrIn = 32'b001011_00010_00010_0000000000010100;				
-		//r4 = r2 + 20 output should be 40
+		InstrIn = 32'b001011_00100_00010_0000000000010100;				
+		//r2= r2 + 20 output should be 40
 		
 		#30;
 		InstrIn = 32'b000100_11101_00010_00011_00000000000;	
@@ -92,7 +92,7 @@ module Pipeline_tb;
 		//r1 = (r2 < r4) ? 1 : 0
 		
 		
-		#30; 
+		#50; 
 		$finish;
 
 	end
