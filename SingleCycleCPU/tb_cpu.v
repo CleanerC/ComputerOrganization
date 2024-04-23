@@ -63,13 +63,13 @@ module tb_cpu;
 		instruction_initialize_data = 32'b001111_00000_00100_00000_00000_000001;      // LUI R4 {00000_00000_000001, 16'd0}
 		#20;
 		
-//		instruction_initialize_address = 40;
-//		instruction_initialize_data = 32'b000010_00000_00000_00000_00000_001000;      // J Addres 32
-//		#20;
-
 		instruction_initialize_address = 40;
-		instruction_initialize_data = 32'b000101_00000_00001_00000_00000_00_0001;      // BNE R0, R0, 4
+		instruction_initialize_data = 32'b000010_00000_00000_00000_00000_001000;      // J Addres 32
 		#20;
+
+//		instruction_initialize_address = 40;
+//		instruction_initialize_data = 32'b000101_00000_00001_00000_00000_00_0001;      // BNE R0, R0, 4
+//		#20;
 		
 		initialize = 0;
 		rst = 0;
